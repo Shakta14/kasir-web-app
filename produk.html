@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matcha POS - Manajemen Produk</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        matcha: {
+                            dark: '#7A9E55',  // 10% - Aksen & Tombol
+                            soft: '#B5C98A',  // 30% - Kartu & Border
+                            cream: '#F3E8CF', // 60% - Background
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="config.js"></script>
+</head>
+<body class="bg-matcha-cream text-slate-800 font-sans min-h-screen flex">
+
+    <!-- SIDEBAR NAVIGASI -->
+    <aside class="w-20 lg:w-64 bg-white border-r border-matcha-soft/50 flex flex-col justify-between hidden sm:flex shrink-0 shadow-sm">
+        <div>
+            <div class="p-5 flex items-center gap-3 border-b border-matcha-cream">
+                <div class="w-10 h-10 bg-matcha-dark rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shrink-0">🍵</div>
+                <div class="hidden lg:block">
+                    <h1 class="font-bold text-slate-900 text-sm">Matcha & Co.</h1>
+                    <p class="text-[10px] text-slate-500">Product Management</p>
+                </div>
+            </div>
+            <nav class="p-4 space-y-2">
+                <a href="inventory.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-matcha-cream/50 rounded-xl font-medium text-xs transition"><span class="hidden lg:inline">Dashboard</span></a>
+                <a href="produk.html" class="flex items-center gap-3 px-4 py-3 bg-matcha-soft/20 text-matcha-dark rounded-xl font-semibold text-xs transition"><span class="hidden lg:inline">Produk</span></a>
+                <a href="kalkulator.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-matcha-cream/50 rounded-xl font-medium text-xs transition"><span class="hidden lg:inline">Kalkulator HPP</span></a>
+            </nav>
+        </div>
+        <div class="p-4 border-t border-matcha-cream flex items-center gap-3 bg-matcha-cream/20">
+            <div class="w-9 h-9 bg-matcha-dark text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0">A</div>
+            <div class="hidden lg:block truncate"><p class="font-bold text-xs text-slate-800">Admin Store</p><p class="text-[10px] text-matcha-dark font-medium">Administrator</p></div>
+        </div>
+    </aside>
+
+    <!-- KONTEN UTAMA -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <header class="bg-white/80 backdrop-blur-md border-b border-matcha-soft/50 sticky top-0 z-20 px-6 py-4 flex justify-between items-center shadow-sm">
+            <h2 class="font-bold text-slate-800 text-base">Manajemen Data Produk</h2>
+            <button onclick="muatProduk()" class="px-4 py-2 bg-matcha-dark text-white text-xs font-semibold rounded-xl shadow-md hover:bg-matcha-dark/90 transition">🔄 Refresh Data</button>
+        </header>
+
+        <main class="p-6 space-y-6 max-w-7xl w-full mx-auto">
+            <div class="bg-white rounded-2xl border border-matcha-soft/60 shadow-sm overflow-hidden p-5">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-matcha-cream/40 text-slate-600 uppercase tracking-wider border-b border-matcha-soft/40">
+                                <th class="py-3 px-4 font-semibold">ID</th>
+                                <th class="py-3 px-4 font-semibold">Nama Produk</th>
+                                <th class="py-3 px-4 font-semibold">Kategori</th>
+                                <th class="py-3 px-4 font-semibold">Harga</th>
+                                <th class="py-3 px-4 font-semibold text-center">Stok</th>
+                                <th class="py-3 px-4 font-semibold text-center">Aksi (Edit / Hapus)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelProdukAdmin" class="divide-y divide-matcha-cream">
+                            <tr><td colspan="6" class="text-center py-8 text-slate-400">Memuat data produk...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL EDIT PRODUK -->
+    <div id="modalEdit" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full space-y-4 border border-matcha-soft shadow-lg">
+            <h3 class="font-bold text-slate-800 text-base">Edit Produk</h3>
+            <input type="hidden" id="editId">
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nama Produk</label>
+                <input type="text" id="editNama" class="w-full bg-matcha-cream/30 border border-matcha-soft rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-matcha-dark">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Kategori</label>
+                <input type="text" id="editKategori" class="w-full bg-matcha-cream/30 border border-matcha-soft rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-matcha-dark">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Harga (Rp)</label>
+                <input type="number" id="editHarga" class="w-full bg-matcha-cream/30 border border-matcha-soft rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-matcha-dark">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-slate-600 mb-1">Stok</label>
+                <input type="number" id="editStok" class="w-full bg-matcha-cream/30 border border-matcha-soft rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-matcha-dark">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="tutupModal()" class="flex-1 py-2 bg-slate-100 text-slate-600 font-semibold rounded-xl text-xs hover:bg-slate-200">Batal</button>
+                <button onclick="simpanEditProduk()" class="flex-1 py-2 bg-matcha-dark text-white font-semibold rounded-xl text-xs hover:bg-matcha-dark/90">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT MANAJEMEN PRODUK -->
+    <script>
+
+        let listProdukGlobal = [];
+
+        async function muatProduk() {
+            try {
+                const res = await fetch(WEB_APP_URL + "?action=getProducts");
+                listProdukGlobal = await res.json();
+                renderTabel(listProdukGlobal);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('tabelProdukAdmin').innerHTML = `<tr><td colspan="6" class="text-center py-8 text-rose-500">Gagal memuat produk.</td></tr>`;
+            }
+        }
+
+        function renderTabel(data) {
+            const tbody = document.getElementById('tabelProdukAdmin');
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-slate-400">Tidak ada produk.</td></tr>`;
+                return;
+            }
+
+            let html = "";
+            data.forEach(p => {
+                html += `
+                    <tr class="hover:bg-matcha-cream/20 transition">
+                        <td class="py-3 px-4 font-mono text-slate-500">${p.id}</td>
+                        <td class="py-3 px-4 font-semibold text-slate-800 flex items-center gap-2">
+                            <img src="${p.gambar || 'https://via.placeholder.com/150'}" class="w-7 h-7 rounded-lg object-cover bg-matcha-cream" onerror="this.src='https://via.placeholder.com/150'">
+                            <span>${p.nama}</span>
+                        </td>
+                        <td class="py-3 px-4 text-slate-500">${p.kategori}</td>
+                        <td class="py-3 px-4 font-medium text-slate-700">Rp ${Number(p.harga).toLocaleString('id-ID')}</td>
+                        <td class="py-3 px-4 text-center font-bold text-slate-800">${p.stok}</td>
+                        <td class="py-3 px-4 text-center space-x-2">
+                            <button onclick="bukaModalEdit('${p.id}')" class="px-3 py-1 bg-amber-100 text-amber-800 font-semibold rounded-lg hover:bg-amber-200 transition">Edit</button>
+                            <button onclick="hapusProduk('${p.id}')" class="px-3 py-1 bg-rose-100 text-rose-800 font-semibold rounded-lg hover:bg-rose-200 transition">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function bukaModalEdit(id) {
+            let p = listProdukGlobal.find(item => item.id == id);
+            if (!p) return;
+            document.getElementById('editId').value = p.id;
+            document.getElementById('editNama').value = p.nama;
+            document.getElementById('editKategori').value = p.kategori;
+            document.getElementById('editHarga').value = p.harga;
+            document.getElementById('editStok').value = p.stok;
+            document.getElementById('modalEdit').classList.remove('hidden');
+        }
+
+        function tutupModal() {
+            document.getElementById('modalEdit').classList.add('hidden');
+        }
+
+        async function simpanEditProduk() {
+            let id = document.getElementById('editId').value;
+            let nama = document.getElementById('editNama').value;
+            let kategori = document.getElementById('editKategori').value;
+            let harga = document.getElementById('editHarga').value;
+            let stok = document.getElementById('editStok').value;
+
+            const formData = new URLSearchParams();
+            formData.append('action', 'editProduct');
+            formData.append('id', id);
+            formData.append('nama', nama);
+            formData.append('kategori', kategori);
+            formData.append('harga', harga);
+            formData.append('stok', stok);
+
+            try {
+                await fetch(WEB_APP_URL, { method: 'POST', body: formData });
+                tutupModal();
+                muatProduk();
+                alert("✅ Produk berhasil diperbarui di Spreadsheet!");
+            } catch (err) {
+                alert("❌ Gagal mengupdate produk: " + err);
+            }
+        }
+
+        async function hapusProduk(id) {
+            if (!confirm("Apakah Anda yakin ingin menghapus produk ini dari spreadsheet?")) return;
+
+            const formData = new URLSearchParams();
+            formData.append('action', 'deleteProduct');
+            formData.append('id', id);
+
+            try {
+                await fetch(WEB_APP_URL, { method: 'POST', body: formData });
+                muatProduk();
+                alert("🗑️ Produk berhasil dihapus dari Spreadsheet!");
+            } catch (err) {
+                alert("❌ Gagal menghapus produk: " + err);
+            }
+        }
+
+        window.onload = () => { muatProduk(); };
+    </script>
+</body>
+</html>

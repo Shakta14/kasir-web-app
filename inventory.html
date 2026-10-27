@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matcha POS - Dashboard Inventaris</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        matcha: {
+                            dark: '#7A9E55',  // 10% - Aksen, Tombol & Highlight Utama
+                            soft: '#B5C98A',  // 30% - Kartu, Border & Elemen Sekunder
+                            cream: '#F3E8CF', // 60% - Background Utama
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-matcha-cream text-slate-800 font-sans min-h-screen flex">
+
+    <!-- SIDEBAR NAVIGASI VERTIKAL -->
+    <aside class="w-20 lg:w-64 bg-white border-r border-matcha-soft/50 flex flex-col justify-between hidden sm:flex shrink-0 shadow-sm">
+        <div>
+            <!-- Logo Brand -->
+            <div class="p-5 flex items-center gap-3 border-b border-matcha-cream">
+                <div class="hidden lg:block">
+                    <h1 class="font-bold text-slate-900 text-sm tracking-wide">Matchaaa</h1>
+                    <p class="text-[10px] text-slate-500">Inventory Dashboard</p>
+                </div>
+            </div>
+
+            <!-- Menu Navigasi Lengkap -->
+            <nav class="p-4 space-y-2">
+                <!-- Menu Dashboard -->
+                <a href="inventory.html" class="flex items-center gap-3 px-4 py-3 bg-matcha-soft/20 text-matcha-dark rounded-xl font-semibold text-xs transition">
+                    <span class="hidden lg:inline">Dashboard</span>
+                </a>
+                
+                <!-- Menu Produk / Kasir -->
+                <a href="produk.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-matcha-cream/50 rounded-xl font-medium text-xs transition">
+                    <span class="hidden lg:inline">Produk (POS)</span>
+                </a>
+
+                <!-- Menu Kalkulator -->
+                <a href="kalkulator.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-matcha-cream/50 rounded-xl font-medium text-xs transition">
+                    <span class="hidden lg:inline">Kalkulator</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Bagian Paling Bawah: User sebagai Admin -->
+        <div class="p-4 border-t border-matcha-cream flex items-center gap-3 bg-matcha-cream/20">
+            <div class="w-9 h-9 bg-matcha-dark text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+                A
+            </div>
+            <div class="hidden lg:block truncate">
+                <p class="font-bold text-xs text-slate-800">Admin Store</p>
+                <p class="text-[10px] text-matcha-dark font-medium">Administrator</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- KONTEN UTAMA DASHBOARD -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+
+        <!-- TOP BAR / HEADER -->
+        <header class="bg-white/80 backdrop-blur-md border-b border-matcha-soft/50 sticky top-0 z-20 px-6 py-4 flex justify-between items-center shadow-sm">
+            <div class="flex items-center gap-3 w-full max-w-md">
+                <div class="relative w-full">
+                    <input type="text" id="inputCariInventaris" onkeyup="cariInventaris()" placeholder="Cari nama barang atau kategori..." class="w-full bg-matcha-cream/30 border border-matcha-soft/60 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-matcha-dark">
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
+                    ● Sistem Sinkron
+                </span>
+            </div>
+        </header>
+
+        <!-- KONTEN DASHBOARD -->
+        <main class="p-6 space-y-6 max-w-7xl w-full mx-auto">
+            
+            <!-- SECTION 1: KARTU METRIK STATISTIK (Top Summary Cards) -->
+            <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-matcha-soft/60 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400">Total Jenis Produk</p>
+                        <h3 id="statTotalProduk" class="text-2xl font-bold text-slate-900 mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-matcha-cream rounded-2xl flex items-center justify-center text-xl text-matcha-dark">
+                        📦
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-matcha-soft/60 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400">Total Stok Keseluruhan</p>
+                        <h3 id="statTotalStok" class="text-2xl font-bold text-slate-900 mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-matcha-cream rounded-2xl flex items-center justify-center text-xl text-matcha-dark">
+                        📊
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-matcha-soft/60 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400">Status Gudang</p>
+                        <h3 class="text-sm font-bold text-emerald-600 mt-2 bg-emerald-50 px-2.5 py-1 rounded-lg inline-block border border-emerald-100">Aman & Terkendali</h3>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-xl text-emerald-600">
+                        🛡️
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: TABEL DATA INVENTARIS (Inventory Table) -->
+            <section class="bg-white rounded-2xl border border-matcha-soft/60 shadow-sm overflow-hidden">
+                <div class="p-5 border-b border-matcha-cream flex justify-between items-center">
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-base">Daftar Stok Produk</h2>
+                        <p class="text-xs text-slate-400">Data bersumber langsung dari Google Spreadsheet tab <code class="text-matcha-dark font-semibold">Daftar_Produk</code></p>
+                    </div>
+                    <button onclick="ambilDataInventaris()" class="px-4 py-2 bg-matcha-soft/30 hover:bg-matcha-soft/50 text-matcha-dark text-xs font-semibold rounded-xl transition border border-matcha-soft">
+                        🔄 Refresh Data
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-matcha-cream/40 text-slate-600 uppercase tracking-wider border-b border-matcha-soft/40">
+                                <th class="py-3 px-4 font-semibold">ID Produk</th>
+                                <th class="py-3 px-4 font-semibold">Nama Barang</th>
+                                <th class="py-3 px-4 font-semibold">Kategori</th>
+                                <th class="py-3 px-4 font-semibold">Harga Satuan</th>
+                                <th class="py-3 px-4 font-semibold text-center">Stok Tersedia</th>
+                                <th class="py-3 px-4 font-semibold text-center">Status Stok</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelInventarisBody" class="divide-y divide-matcha-cream">
+                            <tr>
+                                <td colspan="6" class="text-center py-8 text-slate-400">Memuat data inventaris dari spreadsheet...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="config.js"></script>
+
+    <!-- JAVASCRIPT KONTROL DASHBOARD INVENTARIS -->
+    <script>
+        
+        // Cek apakah user sudah login atau belum
+        if (localStorage.getItem('pos_logged_in') !== 'true') {
+            window.location.href = 'login.html';
+        }
+
+        // Variabel global untuk menyimpan data inventaris mentah
+        let dataInventarisMentah = [];
+
+        async function ambilDataInventaris() {
+            try {
+                const response = await fetch(WEB_APP_URL + "?action=getProducts");
+                const result = await response.json();
+                dataInventarisMentah = result;
+                renderDashboardInventaris(dataInventarisMentah);
+            } catch (error) {
+                console.error("Gagal memuat inventaris:", error);
+                document.getElementById('tabelInventarisBody').innerHTML = `
+                    <tr><td colspan="6" class="text-center py-8 text-rose-500 font-medium">Gagal memuat data inventaris. Periksa URL Web App Apps Script Anda.</td></tr>
+                `;
+            }
+        }
+
+        function renderDashboardInventaris(listData) {
+            const tbody = document.getElementById('tabelInventarisBody');
+            
+            // Hitung metrik statistik
+            let totalJenis = listData.length;
+            let totalStokKeseluruhan = listData.reduce((acc, curr) => acc + (Number(curr.stok) || 0), 0);
+
+            document.getElementById('statTotalProduk').innerText = totalJenis;
+            document.getElementById('statTotalStok').innerText = totalStokKeseluruhan.toLocaleString('id-ID');
+
+            if (listData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-slate-400">Tidak ada produk ditemukan.</td></tr>`;
+                return;
+            }
+
+            let html = "";
+            listData.forEach(prod => {
+                let stokNum = Number(prod.stok) || 0;
+                let statusBadge = "";
+
+                if (stokNum > 10) {
+                    statusBadge = `<span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 font-semibold rounded-full text-[10px] border border-emerald-200">Aman</span>`;
+                } else if (stokNum > 0) {
+                    statusBadge = `<span class="px-2.5 py-1 bg-amber-50 text-amber-700 font-semibold rounded-full text-[10px] border border-amber-200">Menipis</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 bg-rose-50 text-rose-700 font-semibold rounded-full text-[10px] border border-rose-200">Habis</span>`;
+                }
+
+                html += `
+                    <tr class="hover:bg-matcha-cream/20 transition">
+                        <td class="py-3 px-4 font-mono text-slate-500">${prod.id || 'P-00x'}</td>
+                        <td class="py-3 px-4 font-semibold text-slate-800 flex items-center gap-2">
+                            <img src="${prod.gambar || 'https://via.placeholder.com/150'}" alt="" class="w-7 h-7 rounded-lg object-cover bg-matcha-cream" onerror="this.src='https://via.placeholder.com/150'">
+                            <span>${prod.nama}</span>
+                        </td>
+                        <td class="py-3 px-4 text-slate-500">${prod.kategori}</td>
+                        <td class="py-3 px-4 font-medium text-slate-700">Rp ${Number(prod.harga).toLocaleString('id-ID')}</td>
+                        <td class="py-3 px-4 text-center font-bold text-slate-800">${stokNum}</td>
+                        <td class="py-3 px-4 text-center">${statusBadge}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function cariInventaris() {
+            let keyword = document.getElementById('inputCariInventaris').value.toLowerCase();
+            let hasilFilter = dataInventarisMentah.filter(p => p.nama.toLowerCase().includes(keyword) || p.kategori.toLowerCase().includes(keyword));
+            renderDashboardInventaris(hasilFilter);
+        }
+
+        // Muat data saat halaman dibuka
+        window.onload = () => {
+            ambilDataInventaris();
+        };
+    </script>
+</body>
+</html>

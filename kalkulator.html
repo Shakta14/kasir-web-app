@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matcha POS - Kalkulator HPP</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        matcha: {
+                            dark: '#7A9E55',  // 10% - Aksen & Tombol Utama
+                            soft: '#B5C98A',  // 30% - Kartu & Border
+                            cream: '#F3E8CF', // 60% - Background Utama
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="config.js"></script>
+</head>
+<body class="bg-matcha-cream text-slate-800 font-sans min-h-screen flex">
+
+    <!-- SIDEBAR NAVIGASI VERTIKAL -->
+    <aside class="w-20 lg:w-64 bg-white border-r border-matcha-soft/50 flex flex-col justify-between hidden sm:flex shrink-0 shadow-sm">
+        <div>
+            <!-- Logo Brand -->
+            <div class="p-5 flex items-center gap-3 border-b border-matcha-cream">
+                <div class="w-10 h-10 bg-matcha-dark rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md shrink-0">
+                    🍵
+                </div>
+                <div class="hidden lg:block">
+                    <h1 class="font-bold text-slate-900 text-sm tracking-wide">Matcha & Co.</h1>
+                    <p class="text-[10px] text-slate-500">HPP Calculator</p>
+                </div>
+            </div>
+
+            <!-- Menu Navigasi -->
+            <nav class="p-4 space-y-2">
+                <a href="inventory.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-matcha-cream/50 rounded-xl font-medium text-xs transition">
+                    <span class="hidden lg:inline">Dashboard</span>
+                </a>
+                <a href="produk.html" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-matcha-cream/50 rounded-xl font-medium text-xs transition">
+                    <span class="hidden lg:inline">Produk (POS)</span>
+                </a>
+                <a href="kalkulator.html" class="flex items-center gap-3 px-4 py-3 bg-matcha-soft/20 text-matcha-dark rounded-xl font-semibold text-xs transition">
+                    <span class="hidden lg:inline">Kalkulator HPP</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- User Admin di Bawah -->
+        <div class="p-4 border-t border-matcha-cream flex items-center gap-3 bg-matcha-cream/20">
+            <div class="w-9 h-9 bg-matcha-dark text-white rounded-full flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+                A
+            </div>
+            <div class="hidden lg:block truncate">
+                <p class="font-bold text-xs text-slate-800">Admin Store</p>
+                <p class="text-[10px] text-matcha-dark font-medium">Administrator</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- KONTEN UTAMA HALAMAN KALKULATOR -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+
+        <!-- TOP BAR -->
+        <header class="bg-white/80 backdrop-blur-md border-b border-matcha-soft/50 sticky top-0 z-20 px-6 py-4 flex justify-between items-center shadow-sm">
+            <h2 class="font-bold text-slate-800 text-base">Kalkulator HPP & Harga Jual Produk</h2>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
+                ● Halaman Khusus
+            </span>
+        </header>
+
+        <!-- KONTEN KALKULATOR -->
+        <main class="p-6 space-y-6 max-w-5xl w-full mx-auto">
+            <div class="bg-white rounded-2xl border border-matcha-soft/60 shadow-sm p-6 space-y-5">
+                <div class="border-b border-matcha-cream pb-4">
+                    <h3 class="font-bold text-slate-800 text-base">Rancangan Resep & Analisis Modal</h3>
+                    <p class="text-xs text-slate-400">Masukkan rincian bahan baku untuk menghitung modal dasar per porsi secara akurat.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Kolom Kiri: Input Bahan -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-semibold text-xs text-slate-700 uppercase tracking-wider">1. Daftar Bahan Baku Resep</h4>
+                            <button onclick="tambahBarisBahan()" class="px-3 py-1 bg-matcha-soft/30 hover:bg-matcha-soft/50 text-matcha-dark text-xs font-semibold rounded-lg transition border border-matcha-soft">+ Tambah Bahan</button>
+                        </div>
+
+                        <div id="containerBahanResep" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                            <div class="grid grid-cols-12 gap-2 items-center bahan-row">
+                                <input type="text" placeholder="Nama Bahan (Cth: Susu UHT)" class="col-span-8 bg-matcha-cream/30 border border-matcha-soft/60 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-matcha-dark nama-bahan">
+                                <input type="number" placeholder="Harga (Rp)" class="col-span-3 bg-matcha-cream/30 border border-matcha-soft/60 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-matcha-dark harga-bahan" oninput="hitungHPP()">
+                                <button onclick="hapusBarisBahan(this)" class="col-span-1 text-rose-500 font-bold hover:text-rose-700 text-center">✕</button>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-matcha-cream space-y-2">
+                            <label class="block text-xs font-semibold text-slate-700">2. Jumlah Porsi/Unit yang Dihasilkan:</label>
+                            <input type="number" id="hasilProduksi" value="1" min="1" oninput="hitungHPP()" class="w-full bg-matcha-cream/30 border border-matcha-soft/60 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-matcha-dark font-bold text-slate-800">
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-semibold text-slate-700">3. Target Margin Keuntungan (%):</label>
+                            <input type="number" id="targetMargin" value="30" min="0" oninput="hitungHPP()" class="w-full bg-matcha-cream/30 border border-matcha-soft/60 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-matcha-dark font-bold text-slate-800">
+                        </div>
+                    </div>
+
+                    <!-- Kolom Kanan: Hasil Analisis -->
+                    <div class="bg-matcha-cream/30 p-5 rounded-2xl border border-matcha-soft/50 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-4">📊 Hasil Kalkulasi HPP & Jual</h4>
+                            
+                            <div class="space-y-3 text-xs">
+                                <div class="flex justify-between py-2 border-b border-matcha-soft/40">
+                                    <span class="text-slate-600">Total Modal Keseluruhan:</span>
+                                    <span id="resTotalModal" class="font-bold text-slate-900">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b border-matcha-soft/40">
+                                    <span class="text-slate-600">Jumlah Produk Dihasilkan:</span>
+                                    <span id="resJumlahPorsi" class="font-bold text-slate-900">0 Porsi</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b border-matcha-soft/40 bg-white/60 px-3 rounded-xl">
+                                    <span class="font-semibold text-matcha-dark">HPP Per Porsi (Modal Dasar):</span>
+                                    <span id="resHppPerPorsi" class="font-bold text-matcha-dark text-sm">Rp 0</span>
+                                </div>
+                                <div class="flex justify-between py-2 border-b border-matcha-soft/40 bg-matcha-soft/20 px-3 rounded-xl">
+                                    <span class="font-bold text-slate-900">Rekomendasi Harga Jual:</span>
+                                    <span id="resHargaJual" class="font-bold text-emerald-700 text-sm">Rp 0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-[11px] text-slate-500 bg-white p-3 rounded-xl border border-matcha-soft/40">
+                            💡 **Catatan:** Halaman ini berdiri sendiri dan dapat diakses kapan saja melalui menu sidebar tanpa mengganggu halaman kasir utama.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT KALKULATOR HPP -->
+    <script>
+        function tambahBarisBahan() {
+            const container = document.getElementById('containerBahanResep');
+            const rowDiv = document.createElement('div');
+            rowDiv.className = "grid grid-cols-12 gap-2 items-center bahan-row";
+            rowDiv.innerHTML = `
+                <input type="text" placeholder="Nama Bahan" class="col-span-8 bg-matcha-cream/30 border border-matcha-soft/60 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-matcha-dark nama-bahan">
+                <input type="number" placeholder="Harga (Rp)" class="col-span-3 bg-matcha-cream/30 border border-matcha-soft/60 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-matcha-dark harga-bahan" oninput="hitungHPP()">
+                <button onclick="hapusBarisBahan(this)" class="col-span-1 text-rose-500 font-bold hover:text-rose-700 text-center">✕</button>
+            `;
+            container.appendChild(rowDiv);
+        }
+
+        function hapusBarisBahan(button) {
+            const row = button.parentElement;
+            const container = document.getElementById('containerBahanResep');
+            if (container.children.length > 1) {
+                row.remove();
+                hitungHPP();
+            } else {
+                alert("Resep minimal harus memiliki 1 bahan!");
+            }
+        }
+
+        function hitungHPP() {
+            let totalModalBahan = 0;
+            const barisBahan = document.querySelectorAll('.bahan-row');
+
+            barisBahan.forEach(row => {
+                let harga = parseFloat(row.querySelector('.harga-bahan').value) || 0;
+                totalModalBahan += harga; 
+            });
+
+            let jumlahPorsi = parseInt(document.getElementById('hasilProduksi').value) || 1;
+            if (jumlahPorsi <= 1) jumlahPorsi = 1;
+
+            let targetMargin = parseFloat(document.getElementById('targetMargin').value) || 0;
+
+            let hppPerPorsi = totalModalBahan / jumlahPorsi;
+            let hargaJualSaran = hppPerPorsi + (hppPerPorsi * (targetMargin / 100));
+
+            document.getElementById('resTotalModal').innerText = "Rp " + totalModalBahan.toLocaleString('id-ID');
+            document.getElementById('resJumlahPorsi').innerText = jumlahPorsi + " Porsi";
+            document.getElementById('resHppPerPorsi').innerText = "Rp " + Math.round(hppPerPorsi).toLocaleString('id-ID');
+            document.getElementById('resHargaJual').innerText = "Rp " + Math.round(hargaJualSaran).toLocaleString('id-ID');
+        }
+    </script>
+</body>
+</html>

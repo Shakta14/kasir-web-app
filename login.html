@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matcha POS - Login</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        matcha: {
+                            dark: '#7A9E55',  // 10% - Tombol & Aksen
+                            soft: '#B5C98A',  // 30% - Border & Kartu
+                            cream: '#F3E8CF', // 60% - Background Utama
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- 1. PANGGIL CONFIG.JS TERLEBIH DAHULU -->
+    <script src="config.js"></script>
+</head>
+<body class="bg-matcha-cream text-slate-800 font-sans min-h-screen flex items-center justify-center p-4">
+
+    <!-- KARTU LOGIN -->
+    <div class="bg-white rounded-3xl border border-matcha-soft/60 shadow-xl p-8 max-w-md w-full space-y-6">
+        <div class="text-center space-y-2">
+            <div class="w-14 h-14 bg-matcha-dark text-white rounded-2xl mx-auto flex items-center justify-center text-2xl shadow-md">
+                🍵
+            </div>
+            <h1 class="font-bold text-slate-900 text-xl">Selamat Datang</h1>
+            <p class="text-xs text-slate-500">Silakan login sesuai akun dan role Anda</p>
+        </div>
+
+        <form id="loginForm" onsubmit="prosesLogin(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Username</label>
+                <input type="text" id="username" required placeholder="Masukkan username..." class="w-full bg-matcha-cream/30 border border-matcha-soft rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-matcha-dark">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
+                <input type="password" id="password" required placeholder="••••••••" class="w-full bg-matcha-cream/30 border border-matcha-soft rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-matcha-dark">
+            </div>
+
+            <p id="pesanError" class="text-center text-xs font-medium text-rose-500 hidden"></p>
+
+            <button type="submit" id="btnLogin" class="w-full bg-matcha-dark hover:bg-matcha-dark/90 text-white font-semibold py-3 rounded-xl transition shadow-md text-xs">
+                Login ke Sistem
+            </button>
+        </form>
+
+        <div class="text-center text-[11px] text-slate-400 border-t border-matcha-cream pt-4">
+            Matcha & Co. POS System v1.0
+        </div>
+    </div>
+
+    <!-- 2. LOGIKA PROSES LOGIN -->
+    <script>
+        async function prosesLogin(event) {
+            event.preventDefault();
+            const userInp = document.getElementById('username').value.trim();
+            const passInp = document.getElementById('password').value.trim();
+            const btn = document.getElementById('btnLogin');
+            const err = document.getElementById('pesanError');
+
+            btn.disabled = true;
+            btn.innerText = "Memeriksa Akun...";
+            err.classList.add('hidden');
+
+            try {
+                // WEB_APP_URL diambil secara otomatis dari config.js
+                const response = await fetch(WEB_APP_URL + "?action=getUsers");
+                const users = await response.json();
+
+                // Cari kecocokan user & password
+                let userMatch = users.find(u => u.username === userInp && u.password === passInp);
+
+                if (userMatch) {
+                    // Simpan sesi login ke LocalStorage browser
+                    localStorage.setItem('pos_logged_in', 'true');
+                    localStorage.setItem('pos_username', userMatch.username);
+                    localStorage.setItem('pos_role', userMatch.role);
+
+                    // Arahkan (Redirect) berdasarkan Role
+                    if (userMatch.role === 'admin' || userMatch.role === 'owner') {
+                        window.location.href = 'inventory.html';
+                    } else if (userMatch.role === 'kasir') {
+                        window.location.href = 'index.html';
+                    } else {
+                        window.location.href = 'login.html';
+                    }
+                } else {
+                    err.innerText = "❌ Username atau password salah!";
+                    err.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerText = "Login ke Sistem";
+                }
+            } catch (error) {
+                console.error(error);
+                err.innerText = "❌ Gagal terhubung ke server database.";
+                err.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerText = "Login ke Sistem";
+            }
+        }
+    </script>
+</body>
+</html>
